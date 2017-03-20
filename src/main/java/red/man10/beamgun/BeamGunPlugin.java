@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public final class BeamGunPlugin extends JavaPlugin implements Listener {
@@ -30,7 +32,7 @@ public final class BeamGunPlugin extends JavaPlugin implements Listener {
 
     //      ユーザーをキーにしたアイテム情報
     HashMap<UUID,BeamGun> map = new HashMap<UUID,BeamGun>();
-
+    ArrayList<EntityLink> links = new ArrayList<EntityLink>();
 
     BeamGun getObject(UUID uuid){
         Player p = Bukkit.getPlayer(uuid);
@@ -52,13 +54,25 @@ public final class BeamGunPlugin extends JavaPlugin implements Listener {
        // BeamGun bg = new BeamGun();
         map.put(p.getUniqueId(),bg);
     }
-
+    public void onTickTimer(){
+        for(EntityLink link : links){
+            link.drawLine();
+        }
+    }
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents (this,this);
         getCommand("mbg").setExecutor(new BeamGunCommand(this));
+
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+                onTickTimer();
+            }
+        }, 0, 4);
+
     }
 
     @Override

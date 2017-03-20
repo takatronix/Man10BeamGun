@@ -42,6 +42,9 @@ public class BeamGun {
         item.setItemMeta(im);
         p.getInventory().addItem(item);
     }
+
+    int    target = 0;
+    EntityLink link = new EntityLink();
     public void onPlayerInteract(PlayerInteractEvent e){
 
         Player p = e.getPlayer();
@@ -63,6 +66,8 @@ public class BeamGun {
 
 
         int count = 0;
+
+
         for(;;){
             double x = v.getX() * step;
             double y = v.getY() * step;
@@ -92,6 +97,28 @@ public class BeamGun {
                    // p.sendMessage("Hit!:"+ent.getName());
                     ent.setGlowing(true);
 
+                    if(target == 0){
+                        p.sendMessage("source is "+ent.getName());
+                        link.source = ent;
+
+                        target = 1;
+                        return;
+                    }else if (target == 1){
+
+                        p.sendMessage("dest is "+ent.getName());
+                        link.dest = ent;
+                        if(link.dest == link.source){
+                            p.sendMessage("same target");
+                            target = 0;
+                            return;
+                        }
+
+
+                        plugin.links.add(link);
+                        p.sendMessage("links:"+ plugin.links.size());
+                        target = 0;
+                        return;
+                    }
                     //Vector v2 = v;
                     //v2.multiply(-1);
                     //ent.setVelocity(v2);
